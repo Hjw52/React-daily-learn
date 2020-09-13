@@ -2,13 +2,16 @@ import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import Home from "./pages/Home";
+import Card from './pages/card'
 import User from "./pages/User";
 import Search from "./pages/Search";
 import LifeCycle from "./pages/LifeCycle";
+import {Provider} from './AppContext'
 
 const store = {
   userInfo: {
     userName: "xiaoming",
+    isLogin: true
   },
 };
 
@@ -22,7 +25,10 @@ function App() {
       {/* <Home /> */}
       {/* <User /> */}
       {/* <Search store={store} tellme={tellme} /> */}
-      <LifeCycle />
+      <Provider value={store}>
+        {/* <Home/> */}
+        <Card />
+      </Provider>
     </div>
   );
 }

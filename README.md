@@ -145,16 +145,31 @@ setTimeout(() => {
 
 ### 函数组件Hook
 
-利用useState，useEffect设置状态。
+利用useState，useEffect设置状态。还有useReducer类似于reducer，useContext⽤于在快速在函数组件中导⼊上下⽂。
 
 ```
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useReducer } from "react";
+//定义reducer 函数 这边dateReducer示例
+function dateReducer(state,action){
+	switch(action.type){
+	case :....
+	case :....
+	}
+}
 export default function User() {
  const [date, setDate] = useState(new Date());
+ const [date, dispatch] =useReducer(dateReducer, []);
+ //使用setState
  useEffect(() => {
  const timeId = setInterval(() => {
  setDate(new Date());
  }, 1000);
+ //使用useReducer
+ useEffect(() => {
+ setTimeout(() => {
+ dispatch({ type, data});
+ }, 1000);
+ }, []);
  return () => clearInterval(timeId);
  });
  return <div>{date.toLocaleTimeString()}</div>;
@@ -232,3 +247,49 @@ V16.4之后的⽣命周期：
 - getSnapshotBeforeUpdate
 
 ​       在最近⼀次渲染输出（提交到 DOM 节点）之前调⽤。它使得组件能在发⽣更改之前从 DOM 中 捕获⼀些信息（例如，滚动位置）。此⽣命周期的任何返回值将作 为参数传递给 componentDidUpdate()
+
+### 组件优化
+
+1. 通过shouldComponentUpdate判断是否渲染 ，如nextProps, nextState没变化则不渲染
+
+2. react 的 PureComponent 会自动比较渲染的值 不过比较只是浅比较，对于含有object的state没有效果，而且也只针对类组件。下面为部分源码
+
+   ```
+   /*
+    * React.PureComponent
+    */
+   //=>把两个对象进行浅比较
+   // 只比较对象的第一级
+   // 如果属性值是基本类型的，我们只需要比较值是否一样即可
+   function shallowEqual(obj1, obj2) {
+   	if (Object.keys(obj1).length !== Object.keys(obj2).length) {
+   		return false;
+   	}
+   	for (let key in obj1) {
+   		if (obj1[key] !== obj2[key]||!obj1.hasOwnPorperty(obj2[key])) {
+   			return false;
+   		}
+   	}
+   	return true;
+   }
+   ```
+
+3. React.memo 作用和pureComponent类似 相当于函数组件版的纯组件。
+
+```
+import React, { Component, memo } from "react";
+const PuerCounter = memo(props => {
+ console.log("render");
+ return <div>{props.counter}</div>;
+});
+```
+
+### Portals 异地挂载
+
+Portal 提供了一种将子节点渲染到存在于父组件以外的 DOM 节点的优秀的方案。
+
+```
+ReactDOM.createPortal(child, container)
+```
+
+第一个参数（`child`）是任何[可渲染的 React 子元素](https://react.docschina.org/docs/react-component.html#render)，例如一个元素，字符串或 fragment。第二个参数（`container`）是一个 DOM 元素。portal 的典型用例是当父组件有 `overflow: hidden` 或 `z-index` 样式时，但你需要子组件能够在视觉上“跳出”其容器。例如，对话框、悬浮卡以及提示框。但要**注意：**对于事件冒泡，还是在声明处开始传播，并不会根据挂载地点而改变。无论其是否采用 portal 实现，父组件都能够捕获其事件。

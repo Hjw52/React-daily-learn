@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import {Consumer} from '../AppContext'
 
 export default class Home extends Component {
   constructor(props) {
@@ -59,12 +60,30 @@ export default class Home extends Component {
     const str = "我是home页面";
     const { date, counter } = this.state;
     return (
-      <div>
-        <h1>{str}</h1>
-        <p>{date.toLocaleTimeString()}</p>
-        <p>{counter}</p>
-        <button onClick={this.setCounter}>改变counter</button>
-      </div>
+      <Consumer>
+        {
+        
+          ctx => <HomeCmp {...ctx} />
+        }
+      </Consumer>
+      // <div>
+      //   <h1>{str}</h1>
+      //   <p>{date.toLocaleTimeString()}</p>
+      //   <p>{counter}</p>
+      //   <button onClick={this.setCounter}>改变counter</button>
+      // </div>
     );
   }
+}
+function HomeCmp(props) {
+  //console.log(props)
+  const { userInfo } = props
+  const { isLogin, userName } = userInfo
+  return (
+  <div>
+  {
+  isLogin ? userName : '登录'
+  }
+</div>
+)
 }
