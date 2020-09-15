@@ -293,3 +293,41 @@ ReactDOM.createPortal(child, container)
 ```
 
 第一个参数（`child`）是任何[可渲染的 React 子元素](https://react.docschina.org/docs/react-component.html#render)，例如一个元素，字符串或 fragment。第二个参数（`container`）是一个 DOM 元素。portal 的典型用例是当父组件有 `overflow: hidden` 或 `z-index` 样式时，但你需要子组件能够在视觉上“跳出”其容器。例如，对话框、悬浮卡以及提示框。但要**注意：**对于事件冒泡，还是在声明处开始传播，并不会根据挂载地点而改变。无论其是否采用 portal 实现，父组件都能够捕获其事件。
+
+### redux
+
+redux是全局的状态管理器，与vuex不同，redux并不是只适用于redux。当然react也有自己的react-redux版本。redux简单讲：
+
+1. 需要一个store存储数据 通过createStore(Reducer)创建
+
+2. Reducer根据action类型控制状态变更，它是一个纯函数，不能修改传入参数 不能产生副作用 也不能调用非存函数（比如获取时间Date.now()等）
+
+3. 使用时需要store.subscribe()订阅更新 ，也可全局地store.subscribe(render)。
+
+   ```
+   componentDidMount() {
+    	store.subscribe(() => {
+    		this.forceUpdate();
+    		//this.setState({});
+    });
+    }
+   ```
+
+核心实现：
+
+- 存储状态state
+- 获取状态getState
+- 更新状态dispatch
+- 订阅subscribe
+
+相当于一个类 提供了以上方法。
+
+### react-redux
+
+react版的redux，提供两个API，Provider包裹APP根组件 传入store 为后代组件提供store，connect 为组件提供数据和变更⽅法（mapStateToProps，mapDispatchToProps）。redux-thunk使用中间件可以实现异步等操作。
+
+```
+const store = createStore(Reducer,
+applyMiddleware(logger, thunk));
+```
+
