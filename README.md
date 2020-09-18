@@ -331,3 +331,22 @@ const store = createStore(Reducer,
 applyMiddleware(logger, thunk));
 ```
 
+### React调度逻辑
+
+render⼀旦开始渲染，就开始递归，本身这个 没啥问题，但是如果应⽤变得庞⼤后，多层递归会有卡顿， 后⾯状态修改后的diff也是⼀样， 整个vdom对象变⼤后，diff的过程也有会递归过多导致的卡顿。这时就要利用浏览器的闲时调度requestIdleCallback ，它可以利⽤浏览器的 业余时间，我们可以把任务分成⼀个个的⼩⼈物，然后 利⽤浏览器空闲时间来做diff，如果当前⼜任务来了，⽐如⽤户的点击或者动画，会先执⾏，然后空闲后，再回去把requestIdleCallback没完成的任务完成。
+
+没有闲时调度：
+
+![image-20200918222330063](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20200918222330063.png)
+
+采用闲时调度：
+
+![image-20200918222403787](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20200918222403787.png)
+
+为了浏览器兼容，react已经重写了调度逻辑，不⽤requestIdleCallback ，但是过程思路是⼀致的。
+
+### fiber
+
+16.0之前vdom结构是⼀个树形结构， 他的diff过程是没法中断的。为了管理我们vdom树之间的关系，我们需要把 树形结构的内部关系，改造成链表(⽅便终⽌)之前只是children作为⼀个数组递归遍 历，现在⽗=》⼦,⼦=》兄弟，，⼦=》⽗，都有关系。存了执行父节点 兄弟节点 子节点三个指针。
+
+![preview](https://segmentfault.com/img/bVbzaMR?w=1480&h=1294/view)
