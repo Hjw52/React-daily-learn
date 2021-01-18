@@ -258,12 +258,7 @@ V16.4之后的⽣命周期：
    /*
     * React.PureComponent
     */
- if (ctor.prototype && ctor.prototype.isPureReactComponent) {
-  return (
-  	//浅比较属性和状态
-    !shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)
- 	 );
-}
+   //浅比较属性和状态 return{ !shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)}
    //=>把两个对象进行浅比较
    // 只比较对象的第一级
    // 如果属性值是基本类型的，我们只需要比较值是否一样即可
